@@ -1,0 +1,56 @@
+---
+- name: Disable swap
+  command: swapoff -a
+
+- name: Disable SWAP in fstab
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    replace: '# \1'
+
+- name: Enable kernel modules
+  modprobe:
+    name: "{{ item }}"
+    state: present
+    loop: "{{ rke_kernel_modules }}"
+
+- name: Sysctl settings
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    sysctl_file: /etc/sysctl.d/k8s.conf
+    reload: yes
+    state: present
+
+- name: Check if the SSH private key exists
+  stat:
+    path: "{{ rke_ssh_private_key }}"
+  register: check_rke_ssh_private_key
+  run_once: true
+  delegate_to: "{{ rke_node }}"
+
+- name: Create the SSH private key
+  command: "ssh-keygen -t rsa -b 4096 -C {{ ansible_env.USER }}@{{ inventory_hostname }} -N '' -f {{ rke_ssh_private_key }}"
+  when: not check_rke_ssh_private_key.stat.exists
+  run_once: true
+  delegate_to: "{{ rke_node }}"
+
+- name: Get the SSH public key
+  command: "ssh-keygen -y -f {{ rke_ssh_private_key }}"
+  register: rke_ssh_public_key
+  run_once: true
+  delegate_to: "{{ rke_node }}"
+
+- name: Copy the SSH public key
+  authorized_key:
+    user: "{{ ansible_env.USER }}"
+    key: "{{ rke_ssh_public_key.stdout }}"
+    state: present
+
+- name: Configure SSH daemon
+  replace:
+    path: /etc/ssh/sshd_config
+    regexp: '^(#?(AllowTcpForwarding)\s(no|yes))$' 
+    replace: 'AllowTcpForwarding yes'
+  notify:
+    - restart sshd

@@ -1,0 +1,58 @@
+---
+- name: Download the RKE binary
+  get_url:
+    url: "{{ rke_binary_url }}"
+    dest: /usr/local/bin/rke
+    mode: "+rx"
+  run_once: true
+  delegate_to: "{{ rke_node }}"
+
+- name: Ensure config directory exists
+  file:
+    path: "{{ rke_config_dir }}"
+    state: directory
+  run_once: true
+  delegate_to: "{{ rke_node }}"
+
+- name: Create the cluster configuration file
+  template:
+    src: cluster.yml.j2
+    dest: "{{ rke_config_dir }}/cluster.yml"
+    mode: '0644'
+  register: rke_cluster_config
+  run_once: true
+  delegate_to: "{{ rke_node }}"
+
+- name: Deploy Kubernetes with RKE
+  shell: rke up | tee /var/log/rke-up.log
+  args:
+    chdir: "{{ rke_config_dir }}"
+  run_once: true
+  delegate_to: "{{ rke_node }}"
+
+- name: Check deploy Kubernetes with RKE
+  lineinfile:
+    path: /var/log/rke-up.log
+    regexp: 'Finished building Kubernetes cluster successfully'
+    state: absent
+  check_mode: yes
+  register: ansible_rkeed_successfully
+  changed_when: false
+  failed_when: ansible_rkeed_successfully is failed or not ansible_rkeed_successfully.found
+  run_once: true
+  delegate_to: "{{ rke_node }}"
+
+- name: Ensure $HOME/.kube exists
+  file:
+    path: "~/.kube"
+    state: directory
+  run_once: true
+  delegate_to: "{{ rke_node }}"
+
+- name: Copy kubeconfig to default location
+  copy:
+    remote_src: yes
+    src: "{{ rke_config_dir }}/kube_config_cluster.yml"
+    dest: "~/.kube/config"
+  run_once: true
+  delegate_to: "{{ rke_node }}"

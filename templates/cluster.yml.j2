@@ -1,0 +1,27 @@
+{% if rke_cluster_name is defined %}
+cluster_name: {{ rke_cluster_name }}
+{% endif %}
+{% if rke_kubernetes_version is defined %}
+kubernetes_version: {{ rke_kubernetes_version }}
+{% endif %}
+{% if rke_ignore_docker_version is defined %}
+ignore_docker_version: {{ rke_ignore_docker_version }}
+{% endif %}
+ssh_key_path: {{ rke_ssh_private_key | default('~/.ssh/id_rsa') }}
+nodes:
+{% for node in groups.nodes %}
+  - address: {{ hostvars[node].ansible_host }}
+    user: {{ ansible_env.USER }}
+    hostname_override: {{ hostvars[node].inventory_hostname_short }}
+    role:
+      {{ rke_node_groups[rke_node_group_name].roles | to_nice_yaml(indent=2) | indent(width=6) }}
+  {%- if rke_node_groups[rke_node_group_name].labels is defined %}
+    labels:
+      {{ rke_node_groups[rke_node_group_name].labels | to_nice_yaml(indent=2) | indent(width=6) }}
+  {%- endif %}
+  {%- if rke_node_groups[rke_node_group_name].taints is defined %}
+    taints:
+      {{ rke_node_groups[rke_node_group_name].taints | to_nice_yaml(indent=2) | indent(width=6) }}
+  {%- endif %}
+
+{% endfor -%}

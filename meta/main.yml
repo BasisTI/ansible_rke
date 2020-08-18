@@ -1,0 +1,15 @@
+galaxy_info:
+  author: cainafeitosa
+  description: Ansible role that installs Kubernetes by RKE
+  company: Basis Tecnologia
+  license: Apache-2.0
+  min_ansible_version: 2.9
+  galaxy_tags:
+    - docker
+    - Kubernetes
+    - RKE 
+
+dependencies:
+  - name: ansible_docker
+    src: https://github.com/BasisTI/ansible_rke.git
+    version: master
