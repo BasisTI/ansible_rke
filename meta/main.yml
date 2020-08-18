@@ -11,5 +11,5 @@ galaxy_info:
 
 dependencies:
   - name: ansible_docker
-    src: https://github.com/BasisTI/ansible_rke.git
+    src: https://github.com/BasisTI/ansible_docker.git
     version: master
