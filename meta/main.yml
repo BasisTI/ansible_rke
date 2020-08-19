@@ -9,12 +9,6 @@ galaxy_info:
     - kubernetes
     - rke
   platforms:
-    - name: Red Hat Enterprise Linux
-      versions:
-        - 7
-    - name: CentOS
-      versions:
-        - 7
     - name: Fedora
       versions:
         - 25
