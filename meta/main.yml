@@ -6,8 +6,21 @@ galaxy_info:
   min_ansible_version: 2.9
   galaxy_tags:
     - docker
-    - Kubernetes
-    - RKE 
+    - kubernetes
+    - rke
+  platforms:
+    - name: Centos
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all 
 
 dependencies:
   - BasisTI.ansible_docker
