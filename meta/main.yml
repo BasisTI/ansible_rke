@@ -20,7 +20,7 @@ galaxy_info:
         - all
     - name: Ubuntu
       versions:
-        - all 
+        - all
 
 dependencies:
   - BasisTI.ansible_docker

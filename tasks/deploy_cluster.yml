@@ -24,9 +24,12 @@
   delegate_to: "{{ rke_node }}"
 
 - name: Deploy Kubernetes with RKE
-  shell: rke up | tee /var/log/rke-up.log
+  shell: >
+    set -o pipefail && \
+      rke up | tee /var/log/rke-up.log
   args:
     chdir: "{{ rke_config_dir }}"
+  changed_when: false
   run_once: true
   delegate_to: "{{ rke_node }}"
 

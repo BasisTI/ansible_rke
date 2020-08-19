@@ -1,8 +1,9 @@
 ---
 - name: Disable swap
   command: swapoff -a
+  changed_when: false
 
-- name: Disable SWAP in fstab
+- name: Disable swap in fstab
   replace:
     path: /etc/fstab
     regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
@@ -37,6 +38,7 @@
 
 - name: Get the SSH public key
   command: "ssh-keygen -y -f {{ rke_ssh_private_key }}"
+  changed_when: false
   register: rke_ssh_public_key
   run_once: true
   delegate_to: "{{ rke_node }}"
@@ -50,7 +52,7 @@
 - name: Configure SSH daemon
   replace:
     path: /etc/ssh/sshd_config
-    regexp: '^(#?(AllowTcpForwarding)\s(no|yes))$' 
+    regexp: '^(#?(AllowTcpForwarding)\s(no|yes))$'
     replace: 'AllowTcpForwarding yes'
   notify:
     - restart sshd
