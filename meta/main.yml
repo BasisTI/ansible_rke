@@ -9,18 +9,30 @@ galaxy_info:
     - kubernetes
     - rke
   platforms:
-    - name: Centos
+    - name: Red Hat Enterprise Linux
       versions:
-        - all
+        - 7
+    - name: CentOS
+      versions:
+        - 7
     - name: Fedora
       versions:
-        - all
+        - 25
+        - 26
+        - 27
+        - 28
+        - 29
+        - 30
+        - 31
     - name: Debian
       versions:
-        - all
+        - stretch
+        - buster
     - name: Ubuntu
       versions:
-        - all
+        - xenial
+        - bionic
+        - focal
 
 dependencies:
   - BasisTI.ansible_docker
