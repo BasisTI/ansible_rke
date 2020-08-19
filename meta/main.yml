@@ -29,4 +29,4 @@ galaxy_info:
         - focal
 
 dependencies:
-  - BasisTI.ansible_docker
+  - basisconfig.ansible_docker
