@@ -34,7 +34,7 @@
     append: yes
   register: rke_user_return
 
-- name: Set rke_ssh_key_file
+- name: Set rke variables
   set_fact:
     rke_config_dir: "{{ rke_user_return.home }}/rke"
     rke_ssh_key_file: "{{ rke_user_return.ssh_key_file }}"
