@@ -29,5 +29,4 @@ galaxy_info:
         - focal
 
 dependencies:
-  - name: ansible_docker
-    src: basisconfig.ansible_docker
+  - name: basisconfig.ansible_docker
