@@ -23,30 +23,26 @@
     reload: yes
     state: present
 
-- name: Check if the SSH private key exists
-  stat:
-    path: "{{ rke_ssh_private_key }}"
-  register: check_rke_ssh_private_key
-  run_once: true
-  delegate_to: "{{ rke_node }}"
+- name: Create user for deploy
+  user:
+    name: "{{ rke_user }}"
+    generate_ssh_key: yes
+    ssh_key_bits: 4096
+    ssh_key_file: .ssh/id_rsa
+    groups: docker
+    append: yes
+  register: rke_user_return
 
-- name: Create the SSH private key
-  command: "ssh-keygen -t rsa -b 4096 -C {{ ansible_env.USER }}@{{ inventory_hostname }} -N '' -f {{ rke_ssh_private_key }}"
-  when: not check_rke_ssh_private_key.stat.exists
-  run_once: true
-  delegate_to: "{{ rke_node }}"
-
-- name: Get the SSH public key
-  command: "ssh-keygen -y -f {{ rke_ssh_private_key }}"
-  changed_when: false
-  register: rke_ssh_public_key
-  run_once: true
-  delegate_to: "{{ rke_node }}"
+- name: Set rke_ssh_key_file
+  set_fact:
+    rke_config_dir: "{{ rke_user_return.home }}/rke"
+    rke_ssh_key_file: "{{ rke_user_return.ssh_key_file }}"
+    rke_ssh_public_key: "{{ rke_user_return.ssh_public_key }}"
 
 - name: Copy the SSH public key
   authorized_key:
-    user: "{{ ansible_env.USER }}"
-    key: "{{ rke_ssh_public_key.stdout }}"
+    user: "{{ rke_user }}"
+    key: "{{ rke_ssh_public_key }}"
     state: present
 
 - name: Configure SSH daemon

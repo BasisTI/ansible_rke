@@ -7,28 +7,26 @@ kubernetes_supported_versions:
   v1.15.12: v1.15.12-rancher2-4
 kubernetes_version: v1.18.6
 kubectl_version: "{{ kubernetes_version }}"
-rke_ssh_private_key: "~/.ssh/id_rsa"
 rke_kubernetes_version: "{{ kubernetes_supported_versions[kubernetes_version] }}"
 rke_release_version: v1.1.4
-rke_binary_url: "https://github.com/rancher/rke/releases/download/{{ rke_release_version }}/rke_linux-{{ ansible_architecture }}"
-rke_config_dir: "~/rke"
+rke_binary_url: "https://github.com/rancher/rke/releases/download/{{ rke_release_version }}/rke_linux-amd64"
 rke_node: "{{ groups.nodes | first }}"
 rke_node_groups:
-  - name: node-config-master
-    roles:
+  node-config-master:
+    role:
       - controlplane
-  - name: node-config-etcd
-    roles:
+  node-config-etcd:
+    role:
       - etcd
-  - name: node-config-master-etcd
-    roles:
+  node-config-master-etcd:
+    role:
       - controlplane
       - etcd
-  - name: node-config-compute
-    roles:
+  node-config-compute:
+    role:
       - worker
-  - name: node-config-rancher
-    roles:
+  node-config-rancher:
+    role:
       - worker
     labels:
       dedicated: rancher-server

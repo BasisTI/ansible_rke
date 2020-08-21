@@ -11,6 +11,9 @@
   file:
     path: "{{ rke_config_dir }}"
     state: directory
+    owner: "{{ rke_user }}"
+    group: "{{ rke_user }}"
+    mode: "0755"
   run_once: true
   delegate_to: "{{ rke_node }}"
 
@@ -18,15 +21,19 @@
   template:
     src: cluster.yml.j2
     dest: "{{ rke_config_dir }}/cluster.yml"
-    mode: '0644'
+    owner: "{{ rke_user }}"
+    group: "{{ rke_user }}"
+    mode: "0644"
   register: rke_cluster_config
   run_once: true
   delegate_to: "{{ rke_node }}"
 
 - name: Deploy Kubernetes with RKE
+  become: yes
+  become_user: "{{ rke_user }}"
   shell: >
     set -o pipefail && \
-      rke up | tee /var/log/rke-up.log
+      rke up | tee rke-up.log
   args:
     chdir: "{{ rke_config_dir }}"
   changed_when: false
@@ -35,27 +42,37 @@
 
 - name: Check deploy Kubernetes with RKE
   lineinfile:
-    path: /var/log/rke-up.log
+    path: "{{ rke_config_dir }}/rke-up.log"
     regexp: 'Finished building Kubernetes cluster successfully'
     state: absent
   check_mode: yes
-  register: ansible_rkeed_successfully
+  register: rke_up_successfully
   changed_when: false
-  failed_when: ansible_rkeed_successfully is failed or not ansible_rkeed_successfully.found
+  failed_when: rke_up_successfully is failed or not rke_up_successfully.found
   run_once: true
   delegate_to: "{{ rke_node }}"
 
 - name: Ensure $HOME/.kube exists
+  become: yes
+  become_user: "{{ rke_user }}"
   file:
     path: "~/.kube"
     state: directory
+    owner: "{{ rke_user }}"
+    group: "{{ rke_user }}"
+    mode: "0755"
   run_once: true
   delegate_to: "{{ rke_node }}"
 
 - name: Copy kubeconfig to default location
+  become: yes
+  become_user: "{{ rke_user }}"
   copy:
     remote_src: yes
     src: "{{ rke_config_dir }}/kube_config_cluster.yml"
     dest: "~/.kube/config"
+    owner: "{{ rke_user }}"
+    group: "{{ rke_user }}"
+    mode: "0644"
   run_once: true
   delegate_to: "{{ rke_node }}"

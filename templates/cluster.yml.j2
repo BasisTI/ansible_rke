@@ -7,21 +7,12 @@ kubernetes_version: {{ rke_kubernetes_version }}
 {% if rke_ignore_docker_version is defined %}
 ignore_docker_version: {{ rke_ignore_docker_version }}
 {% endif %}
-ssh_key_path: {{ rke_ssh_private_key | default('~/.ssh/id_rsa') }}
+ssh_key_path: {{ rke_ssh_key_file }}
 nodes:
-{% for node in groups.nodes %}
-  - address: {{ hostvars[node].ansible_host }}
-    user: {{ ansible_env.USER }}
-    hostname_override: {{ hostvars[node].inventory_hostname_short }}
-    role:
-      {{ rke_node_groups[rke_node_group_name].roles | to_nice_yaml(indent=2) | indent(width=6) }}
-  {%- if rke_node_groups[rke_node_group_name].labels is defined %}
-    labels:
-      {{ rke_node_groups[rke_node_group_name].labels | to_nice_yaml(indent=2) | indent(width=6) }}
-  {%- endif %}
-  {%- if rke_node_groups[rke_node_group_name].taints is defined %}
-    taints:
-      {{ rke_node_groups[rke_node_group_name].taints | to_nice_yaml(indent=2) | indent(width=6) }}
-  {%- endif %}
-
-{% endfor -%}
+{% for host in groups['nodes'] if hostvars[host]['rke_node_group_name'] %}
+  {%- set rke_node_group_name = hostvars[host]['rke_node_group_name'] %}
+- address: {{ hostvars[host]['ansible_facts']['default_ipv4']['address'] }}
+  hostname_override: {{ hostvars[host]['inventory_hostname_short'] | lower }}
+  user: {{ rke_user | default('rke') }}
+  {{ rke_node_groups[rke_node_group_name] | to_nice_yaml(indent=2) | indent(width=2) }}
+{% endfor %}
