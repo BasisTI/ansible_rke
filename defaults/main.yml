@@ -11,26 +11,3 @@ rke_kubernetes_version: "{{ kubernetes_supported_versions[kubernetes_version] }}
 rke_release_version: v1.1.4
 rke_binary_url: "https://github.com/rancher/rke/releases/download/{{ rke_release_version }}/rke_linux-amd64"
 rke_node: "{{ groups.nodes | first }}"
-rke_node_groups:
-  node-config-master:
-    role:
-      - controlplane
-  node-config-etcd:
-    role:
-      - etcd
-  node-config-master-etcd:
-    role:
-      - controlplane
-      - etcd
-  node-config-compute:
-    role:
-      - worker
-  node-config-rancher:
-    role:
-      - worker
-    labels:
-      dedicated: rancher-server
-    taints:
-      - key: dedicated
-        value: rancher-server
-        effect: NoSchedule

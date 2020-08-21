@@ -17,6 +17,20 @@
   run_once: true
   delegate_to: "{{ rke_node }}"
 
+- name: Set labels and taints for rancher dedicated node
+  set_fact:
+    rke_labels:
+      dedicated: rancher-server
+    rke_taints:
+      - key: dedicated
+        value: rancher-server
+        effect: NoSchedule
+  run_once: true
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  when: hostvars[item]['rke_rancher_dedicated_node'] is defined and hostvars[item]['rke_rancher_dedicated_node']
+  loop: "{{ groups['nodes'] }}"
+
 - name: Create the cluster configuration file
   template:
     src: cluster.yml.j2

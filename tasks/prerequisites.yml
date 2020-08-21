@@ -24,6 +24,18 @@
     reload: yes
     state: present
 
+- name: Put SELinux in permissive mode
+  selinux:
+    policy: targeted
+    state: permissive
+  when: ansible_os_family == 'RedHat'
+  register: selinux_state
+
+- name: Ensure SELinux in permissive mode
+  command: setenforce permissive
+  changed_when: selinux_state.changed
+  when: selinux_state.changed and ansible_os_family == 'RedHat'
+
 - name: Create user for deploy
   user:
     name: "{{ rke_user }}"

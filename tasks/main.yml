@@ -3,5 +3,9 @@
 - name: Include prerequisites task
   include_tasks: prerequisites.yml
 
+- name: Include firewalld task
+  include_tasks: firewalld.yml
+  when: ansible_os_family == 'RedHat' 
+
 - name: Include deploy_cluster task
   include_tasks: deploy_cluster.yml
