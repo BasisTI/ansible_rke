@@ -14,7 +14,7 @@
   modprobe:
     name: "{{ item }}"
     state: present
-    loop: "{{ rke_kernel_modules }}"
+  loop: "{{ rke_kernel_modules }}"
 
 - name: Sysctl settings
   sysctl:
