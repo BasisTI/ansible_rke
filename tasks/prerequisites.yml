@@ -33,7 +33,7 @@
 
 - name: Ensure SELinux in permissive mode
   command: setenforce permissive
-  changed_when: selinux_state.changed
+  changed_when: false
   when: selinux_state.changed and ansible_os_family == 'RedHat'
 
 - name: Create user for deploy
