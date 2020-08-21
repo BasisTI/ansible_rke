@@ -8,6 +8,7 @@
     path: /etc/fstab
     regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
     replace: '# \1'
+    mode: preserve
 
 - name: Enable kernel modules
   modprobe:
@@ -50,5 +51,6 @@
     path: /etc/ssh/sshd_config
     regexp: '^(#?(AllowTcpForwarding)\s(no|yes))$'
     replace: 'AllowTcpForwarding yes'
+    mode: preserve
   notify:
     - restart sshd
