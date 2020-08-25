@@ -1,40 +1,57 @@
+# Ansible Role: Rancher Kubernetes Engine (RKE)
+
+
+An ansible role that setup kubernetes cluster with rke on rhel/centos/fedora and debian/ubuntu. 
+
 ![Ansible Galaxy](https://github.com/BasisTI/ansible_rke/workflows/Ansible%20Galaxy/badge.svg)
 
-Role Name
-=========
+## Tags:
+## Variables:
 
-A brief description of the role goes here.
+* `kubernetes_supported_versions`: `{"v1.18.6": "v1.18.6-rancher1-1", "v1.17.9": "v1.17.9-rancher1-1", "v1.16.13": "v1.16.13-rancher1-1", "v1.15.12": "v1.15.12-rancher2-4"}` - Each version of RKE has a specific list of supported Kubernetes versions.
 
-Requirements
-------------
+example: 
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
 
-Role Variables
---------------
+```yaml
+kubernetes_supported_versions:
+   v1.18.6: v1.18.6-rancher1-1
+   v1.17.9: v1.17.9-rancher1-1
+   v1.16.13: v1.16.13-rancher1-1
+   v1.15.12: v1.15.12-rancher2-4
+```
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+* `kubernetes_version`: `v1.18.6` - Specify the kubernetes version across kubernetes supported versions.
 
-Dependencies
-------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
 
-Example Playbook
-----------------
+* `kubectl_version`: `"{{ kubernetes_version }}"` - Defines the kubectl version will be installed.
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
 
-License
--------
+* `rke_kubernetes_version`: `"{{ kubernetes_supported_versions[kubernetes_version] }}"` - Map the RKE kubernetes image version across the selection to the kubernetes version.
 
-BSD
 
-Author Information
-------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+* `rke_release_version`: `v1.1.4` - Defines rke version.
+
+
+
+* `rke_binary_url`: `"https://github.com/rancher/rke/releases/download/{{ rke_release_version }}/rke_linux-amd64"` - Defines rke binary url download.
+
+
+
+* `rke_node`: `"{{ groups.nodes | first }}"` - Node that will be used to deploy cluster using RKE.
+
+
+
+* `rke_user`: `rke` - User that will be used to connect on nodes during the installation proccess.
+
+
+## License
+Apache-2.0
+
+
+
+Documentation generated using: [Ansible-autodoc](https://github.com/AndresBott/ansible-autodoc)
+

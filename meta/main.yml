@@ -1,6 +1,10 @@
 galaxy_info:
+# @meta role_name: Rancher Kubernetes Engine (RKE)
+# @meta description: An Ansible Role that setup Kubernetes Cluster with RKE on RHEL/CentOS/Fedora and Debian/Ubuntu.
+# @meta license: Apache-2.0
+  role_name: rke
   author: cainafeitosa
-  description: Ansible role that installs Kubernetes by RKE
+  description: An Ansible Role that setup Kubernetes Cluster with RKE on RHEL/CentOS/Fedora and Debian/Ubuntu.
   company: Basis Tecnologia
   license: Apache-2.0
   min_ansible_version: 2.9
@@ -29,4 +33,4 @@ galaxy_info:
         - focal
 
 dependencies:
-  - name: basisconfig.ansible_docker
+  - name: basisconfig.docker
