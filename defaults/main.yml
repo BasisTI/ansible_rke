@@ -11,3 +11,4 @@ rke_kubernetes_version: "{{ kubernetes_supported_versions[kubernetes_version] }}
 rke_release_version: v1.1.4
 rke_binary_url: "https://github.com/rancher/rke/releases/download/{{ rke_release_version }}/rke_linux-amd64"
 rke_node: "{{ groups.nodes | first }}"
+rke_user: rke

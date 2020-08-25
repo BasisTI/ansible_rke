@@ -8,18 +8,19 @@ kubernetes_version: {{ rke_kubernetes_version }}
 ignore_docker_version: {{ rke_ignore_docker_version }}
 {% endif %}
 ssh_key_path: {{ rke_ssh_key_file }}
+addon_job_timeout: {{ rke_addon_job_timeout | default(30) }}
 nodes:
 {% for host in groups['nodes'] %}
 - address: {{ hostvars[host]['ansible_default_ipv4']['address'] }}
-  hostname_override: {{ hostvars[host]['inventory_hostname_short'] | lower }}
+  hostname_override: {{ hostvars[host]['ansible_hostname'] | lower }}
   user: {{ rke_user }}
   role:
     {{ hostvars[host]['rke_role'] | to_nice_yaml(indent=2) | indent(width=4) }}
-  {%- if hostvars[host]['rke_labels'] %}
+  {%- if hostvars[host]['rke_labels'] is defined %}
   labels:
     {{ hostvars[host]['rke_labels'] | to_nice_yaml(indent=2) | indent(width=4) }}
   {%- endif %}
-  {%- if hostvars[host]['rke_taints'] %}
+  {%- if hostvars[host]['rke_taints'] is defined %}
   taints:
     {{ hostvars[host]['rke_taints'] | to_nice_yaml(indent=2) | indent(width=4) }}
   {%- endif %}

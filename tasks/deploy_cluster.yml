@@ -1,5 +1,6 @@
 ---
 - name: Download the RKE binary
+  become: true
   get_url:
     url: "{{ rke_binary_url }}"
     dest: /usr/local/bin/rke
@@ -8,6 +9,7 @@
   delegate_to: "{{ rke_node }}"
 
 - name: Ensure config directory exists
+  become: true
   file:
     path: "{{ rke_config_dir }}"
     state: directory
@@ -32,6 +34,7 @@
   loop: "{{ groups['nodes'] }}"
 
 - name: Create the cluster configuration file
+  become: true
   template:
     src: cluster.yml.j2
     dest: "{{ rke_config_dir }}/cluster.yml"
@@ -43,11 +46,11 @@
   delegate_to: "{{ rke_node }}"
 
 - name: Deploy Kubernetes with RKE
-  become: yes
+  become: true
   become_user: "{{ rke_user }}"
   shell: >
     set -o pipefail && \
-      rke up | tee rke-up.log
+      /usr/local/bin/rke up | tee rke-up.log
   args:
     chdir: "{{ rke_config_dir }}"
   changed_when: false
@@ -55,6 +58,7 @@
   delegate_to: "{{ rke_node }}"
 
 - name: Check deploy Kubernetes with RKE
+  become: true
   lineinfile:
     path: "{{ rke_config_dir }}/rke-up.log"
     regexp: 'Finished building Kubernetes cluster successfully'
@@ -67,26 +71,20 @@
   delegate_to: "{{ rke_node }}"
 
 - name: Ensure $HOME/.kube exists
-  become: yes
-  become_user: "{{ rke_user }}"
+  become: true
   file:
     path: "~/.kube"
     state: directory
-    owner: "{{ rke_user }}"
-    group: "{{ rke_user }}"
     mode: "0755"
   run_once: true
   delegate_to: "{{ rke_node }}"
 
 - name: Copy kubeconfig to default location
-  become: yes
-  become_user: "{{ rke_user }}"
+  become: true
   copy:
     remote_src: yes
     src: "{{ rke_config_dir }}/kube_config_cluster.yml"
     dest: "~/.kube/config"
-    owner: "{{ rke_user }}"
-    group: "{{ rke_user }}"
     mode: "0644"
   run_once: true
   delegate_to: "{{ rke_node }}"

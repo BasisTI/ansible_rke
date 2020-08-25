@@ -19,12 +19,10 @@
 - name: Etcd nodes - Inbound rules
   firewalld:
     port: 2379-2380/tcp
-    source: "{{ item }}"
     permanent: yes
     immediate: yes
     state: enabled
   when: "'etcd' in hostvars[inventory_hostname]['rke_role']"
-  loop: "{{ groups['nodes'] }}"
 
 - name: Controlplane nodes - Inbound rules
   firewalld:

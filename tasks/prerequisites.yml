@@ -1,22 +1,26 @@
 ---
 - name: Disable swap
+  become: true
   command: swapoff -a
   changed_when: false
 
 - name: Disable swap in fstab
+  become: true
   replace:
     path: /etc/fstab
     regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
     replace: '# \1'
-    mode: preserve
+    mode: "0644"
 
 - name: Enable kernel modules
+  become: true
   modprobe:
     name: "{{ item }}"
     state: present
   loop: "{{ rke_kernel_modules }}"
 
 - name: Sysctl settings
+  become: true
   sysctl:
     name: net.bridge.bridge-nf-call-iptables
     value: '1'
@@ -25,6 +29,7 @@
     state: present
 
 - name: Put SELinux in permissive mode
+  become: true
   selinux:
     policy: targeted
     state: permissive
@@ -32,11 +37,13 @@
   register: selinux_state
 
 - name: Ensure SELinux in permissive mode
+  become: true
   command: setenforce permissive
   changed_when: false
   when: ansible_os_family == 'RedHat'
 
-- name: Create user for deploy
+- name: Create user for deploy on RKE node
+  become: true
   user:
     name: "{{ rke_user }}"
     generate_ssh_key: yes
@@ -45,6 +52,15 @@
     groups: docker
     append: yes
   register: rke_user_return
+  run_once: yes
+  delegate_to: "{{ rke_node }}"
+
+- name: Create user for deploy on anothers nodes
+  become: true
+  user:
+    name: "{{ rke_user }}"
+    groups: docker
+    append: yes
 
 - name: Set rke variables
   set_fact:
@@ -53,16 +69,18 @@
     rke_ssh_public_key: "{{ rke_user_return.ssh_public_key }}"
 
 - name: Copy the SSH public key
+  become: true
   authorized_key:
     user: "{{ rke_user }}"
     key: "{{ rke_ssh_public_key }}"
     state: present
 
 - name: Configure SSH daemon
+  become: true
   replace:
     path: /etc/ssh/sshd_config
     regexp: '^(#?(AllowTcpForwarding)\s(no|yes))$'
     replace: 'AllowTcpForwarding yes'
-    mode: preserve
+    mode: "0644"
   notify:
     - restart sshd
