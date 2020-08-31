@@ -52,6 +52,7 @@
     set -o pipefail && \
       /usr/local/bin/rke up | tee rke-up.log
   args:
+    executable: /bin/bash
     chdir: "{{ rke_config_dir }}"
   changed_when: false
   run_once: true
