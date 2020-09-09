@@ -9,6 +9,19 @@ ignore_docker_version: {{ rke_ignore_docker_version }}
 {% endif %}
 ssh_key_path: {{ rke_ssh_key_file }}
 addon_job_timeout: {{ rke_addon_job_timeout | default(30) }}
+services:
+  kube-api:
+    service_cluster_ip_range: {{ rke_service_network_cidr }}
+  kube-controller:
+    cluster_cidr: {{ rke_cluster_network_cidr }}
+    service_cluster_ip_range: {{ rke_service_network_cidr }}
+  kubelet:
+    cluster_dns_server: {{ rke_service_network_cidr | ipmath(10) }}
+{% if hostvars | json_query('*.rke_ingress_dedicated_node') | length > 0  %}
+ingress:
+  node_selector:
+    dedicated: ingress
+{% endif %}
 nodes:
 {% for host in groups['nodes'] %}
 - address: {{ hostvars[host]['ansible_default_ipv4']['address'] }}

@@ -15,10 +15,10 @@ example:
 
 ```yaml
 kubernetes_supported_versions:
-   v1.18.6: v1.18.6-rancher1-1
-   v1.17.9: v1.17.9-rancher1-1
-   v1.16.13: v1.16.13-rancher1-1
-   v1.15.12: v1.15.12-rancher2-4
+   v1.18.6: v1.18.6-rancher1-2
+   v1.17.9: v1.17.9-rancher1-2
+   v1.16.13: v1.16.13-rancher1-2
+   v1.15.12: v1.15.12-rancher2-5
 ```
 
 * `kubernetes_version`: `v1.18.6` - Specify the kubernetes version across kubernetes supported versions.
@@ -33,7 +33,7 @@ kubernetes_supported_versions:
 
 
 
-* `rke_release_version`: `v1.1.4` - Defines rke version.
+* `rke_release_version`: `v1.1.6` - Defines rke version.
 
 
 
@@ -46,6 +46,14 @@ kubernetes_supported_versions:
 
 
 * `rke_user`: `rke` - User that will be used to connect on nodes during the installation proccess.
+
+
+
+* `rke_cluster_network_cidr`: `'10.42.0.0/16'` - CIDR pool used to assign IP addresses to pods in the cluster.
+
+
+
+* `rke_service_network_cidr`: `'10.43.0.0/16'` - This is the virtual IP address that will be assigned to services created on Kubernetes.
 
 
 ## License

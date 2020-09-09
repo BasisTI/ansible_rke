@@ -33,6 +33,20 @@
   when: hostvars[item]['rke_rancher_dedicated_node'] is defined and hostvars[item]['rke_rancher_dedicated_node']
   loop: "{{ groups['nodes'] }}"
 
+- name: Set labels and taints for ingress dedicated node
+  set_fact:
+    rke_labels:
+      dedicated: ingress
+    rke_taints:
+      - key: dedicated
+        value: ingress
+        effect: NoSchedule
+  run_once: true
+  delegate_to: "{{ item }}"
+  delegate_facts: true
+  when: hostvars[item]['rke_ingress_dedicated_node'] is defined and hostvars[item]['rke_ingress_dedicated_node']
+  loop: "{{ groups['nodes'] }}"
+
 - name: Create the cluster configuration file
   become: true
   template:
