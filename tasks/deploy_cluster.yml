@@ -30,6 +30,7 @@
   delegate_to: "{{ rke_node }}"
 
 - name: Deploy Kubernetes with RKE
+  become: yes
   become_user: "{{ rke_user }}"
   shell: >
     set -o pipefail && \
