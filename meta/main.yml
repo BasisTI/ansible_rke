@@ -47,5 +47,4 @@ galaxy_info:
         - zesty
 
 dependencies:
-  - name: k8s_prerequisites
-    src: basisconfig.k8s_prerequisites
+  - name: basisconfig.k8s_prerequisites
