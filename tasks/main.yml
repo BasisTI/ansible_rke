@@ -1,11 +1,7 @@
 ---
-# tasks file for ansible_rke
-- name: Include prerequisites task
-  include_tasks: prerequisites.yml
+# tasks file for k8s_rke
+- include_tasks: evaluate_node_groups.yml
 
-- name: Include firewalld task
-  include_tasks: firewalld.yml
-  when: ansible_os_family == 'RedHat'
+- include_tasks: prerequisites.yml
 
-- name: Include deploy_cluster task
-  include_tasks: deploy_cluster.yml
+- include_tasks: deploy_cluster.yml

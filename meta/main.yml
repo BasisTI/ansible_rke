@@ -1,20 +1,30 @@
 galaxy_info:
-# @meta role_name: Rancher Kubernetes Engine (RKE)
+# @meta role_name: K8s RKE
 # @meta description: An Ansible Role that setup Kubernetes Cluster with RKE on RHEL/CentOS/Fedora and Debian/Ubuntu.
-# @meta license: Apache-2.0
-  role_name: rke
+# @meta license: MIT
+  role_name: k8s_rke
   author: cainafeitosa
   description: An Ansible Role that setup Kubernetes Cluster with RKE on RHEL/CentOS/Fedora and Debian/Ubuntu.
   company: Basis Tecnologia
-  license: Apache-2.0
+  license: MIT
   min_ansible_version: 2.9
   galaxy_tags:
     - docker
     - kubernetes
     - rke
   platforms:
-    - name: Fedora
+    - name: EL
       versions:
+        - 7
+    - name: debian
+      versions:
+        - buster
+        - jessie
+        - stretch
+        - wheezy
+    - name: fedora
+      versions:
+        - 24
         - 25
         - 26
         - 27
@@ -22,15 +32,20 @@ galaxy_info:
         - 29
         - 30
         - 31
-    - name: Debian
+        - 32
+    - name: ubuntu
       versions:
-        - stretch
-        - buster
-    - name: Ubuntu
-      versions:
-        - xenial
+        - artful
         - bionic
+        - cosmic
+        - disco
+        - eoan
         - focal
+        - trusty
+        - xenial
+        - yakkety
+        - zesty
 
 dependencies:
-  - name: basisconfig.docker
+  - name: k8s_prerequisites
+    src: basisconfig.k8s_prerequisites

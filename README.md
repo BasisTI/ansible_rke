@@ -1,4 +1,4 @@
-# Ansible Role: Rancher Kubernetes Engine (RKE)
+# Ansible Role: K8s RKE
 
 
 An ansible role that setup kubernetes cluster with rke on rhel/centos/fedora and debian/ubuntu. 
@@ -15,13 +15,12 @@ example:
 
 ```yaml
 kubernetes_supported_versions:
-   v1.18.6: v1.18.6-rancher1-2
-   v1.17.9: v1.17.9-rancher1-2
-   v1.16.13: v1.16.13-rancher1-2
-   v1.15.12: v1.15.12-rancher2-5
+  v1.19.3: v1.19.3-rancher1-1
+  v1.18.10: v1.18.10-rancher1-1
+  v1.17.13: v1.17.13-rancher1-1
 ```
 
-* `kubernetes_version`: `v1.18.6` - Specify the kubernetes version across kubernetes supported versions.
+* `kubernetes_version`: `v1.19.3` - Specify the kubernetes version across kubernetes supported versions.
 
 
 
@@ -33,7 +32,7 @@ kubernetes_supported_versions:
 
 
 
-* `rke_release_version`: `v1.1.6` - Defines rke version.
+* `rke_release_version`: `v1.2.1` - Defines rke version.
 
 
 
@@ -41,11 +40,11 @@ kubernetes_supported_versions:
 
 
 
-* `rke_node`: `"{{ groups.nodes | first }}"` - Node that will be used to deploy cluster using RKE.
-
-
-
 * `rke_user`: `rke` - User that will be used to connect on nodes during the installation proccess.
+
+
+
+* `rke_node`: `"{{ groups['masters'] | first }}"` - Node that will be used to deploy cluster using RKE.
 
 
 
@@ -57,7 +56,7 @@ kubernetes_supported_versions:
 
 
 ## License
-Apache-2.0
+Mit
 
 
 

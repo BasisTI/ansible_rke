@@ -1,49 +1,6 @@
 ---
-- name: Disable swap
-  become: true
-  command: swapoff -a
-  changed_when: false
-
-- name: Disable swap in fstab
-  become: true
-  replace:
-    path: /etc/fstab
-    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
-    replace: '# \1'
-    mode: "0644"
-
-- name: Enable kernel modules
-  become: true
-  modprobe:
-    name: "{{ item }}"
-    state: present
-  loop: "{{ rke_kernel_modules }}"
-
-- name: Sysctl settings
-  become: true
-  sysctl:
-    name: net.bridge.bridge-nf-call-iptables
-    value: '1'
-    sysctl_file: /etc/sysctl.d/k8s.conf
-    reload: yes
-    state: present
-
-- name: Put SELinux in permissive mode
-  become: true
-  selinux:
-    policy: targeted
-    state: permissive
-  when: ansible_os_family == 'RedHat'
-  register: selinux_state
-
-- name: Ensure SELinux in permissive mode
-  become: true
-  command: setenforce permissive
-  changed_when: false
-  when: ansible_os_family == 'RedHat'
-
+# tasks file for k8s_rke
 - name: Create user for deploy on RKE node
-  become: true
   user:
     name: "{{ rke_user }}"
     generate_ssh_key: yes
@@ -56,7 +13,6 @@
   delegate_to: "{{ rke_node }}"
 
 - name: Create user for deploy on anothers nodes
-  become: true
   user:
     name: "{{ rke_user }}"
     groups: docker
@@ -64,23 +20,26 @@
 
 - name: Set rke variables
   set_fact:
-    rke_config_dir: "{{ rke_user_return.home }}/rke"
-    rke_ssh_key_file: "{{ rke_user_return.ssh_key_file }}"
-    rke_ssh_public_key: "{{ rke_user_return.ssh_public_key }}"
+    _rke_config_dir: "{{ rke_user_return.home }}/rke"
+    _rke_ssh_key_file: "{{ rke_user_return.ssh_key_file }}"
+    _rke_ssh_public_key: "{{ rke_user_return.ssh_public_key }}"
 
 - name: Copy the SSH public key
-  become: true
   authorized_key:
     user: "{{ rke_user }}"
-    key: "{{ rke_ssh_public_key }}"
+    key: "{{ _rke_ssh_public_key }}"
     state: present
 
 - name: Configure SSH daemon
-  become: true
   replace:
     path: /etc/ssh/sshd_config
     regexp: '^(#?(AllowTcpForwarding)\s(no|yes))$'
     replace: 'AllowTcpForwarding yes'
-    mode: "0644"
-  notify:
-    - restart sshd
+    mode: '0644'
+  register: sshd_config_state
+
+- name: Restart sshd
+  systemd:
+    name: sshd
+    state: restarted
+  when: sshd_config_state is changed

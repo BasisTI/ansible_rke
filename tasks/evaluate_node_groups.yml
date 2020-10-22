@@ -1,0 +1,21 @@
+---
+- name: Set RKE master nodes facts
+  set_fact:
+    rke_node_role: "{{ rke_node_role | default([]) | union(rke_node_groups | json_query(\"[?name == 'masters'].role | [0]\")) }}"
+  when: "'masters' in group_names"
+
+- name: Set RKE etcd nodes facts
+  set_fact:
+    rke_node_role: "{{ rke_node_role | default([]) | union(rke_node_groups | json_query(\"[?name == 'etcd'].role | [0]\")) }}"
+  when: "'etcd' in group_names"
+
+- name: Set RKE worker nodes facts
+  set_fact:
+    rke_node_role: "{{ rke_node_role | default([]) | union(rke_node_groups | json_query(\"[?name == 'workers'].role | [0]\")) }}"
+  when: "'workers' in group_names"
+
+- name: Set RKE dedicated nodes facts
+  set_fact:
+    rke_node_labels: "{{ rke_node_labels | default({}) | combine(rke_dedicated_node['labels']) }}"
+    rke_node_taints: "{{ rke_node_taints | default([]) | union(rke_dedicated_node['taints']) }}"
+  when: rke_dedicated_node_role_name is defined

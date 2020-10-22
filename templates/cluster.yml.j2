@@ -7,8 +7,8 @@ kubernetes_version: {{ rke_kubernetes_version }}
 {% if rke_ignore_docker_version is defined %}
 ignore_docker_version: {{ rke_ignore_docker_version }}
 {% endif %}
-ssh_key_path: {{ rke_ssh_key_file }}
-addon_job_timeout: {{ rke_addon_job_timeout | default(30) }}
+ssh_key_path: {{ _rke_ssh_key_file | default('~/.ssh/id_rsa') }}
+addon_job_timeout: {{ rke_addon_job_timeout }}
 services:
   kube-api:
     service_cluster_ip_range: {{ rke_service_network_cidr }}
@@ -17,24 +17,41 @@ services:
     service_cluster_ip_range: {{ rke_service_network_cidr }}
   kubelet:
     cluster_dns_server: {{ rke_service_network_cidr | ipmath(10) }}
-{% if hostvars | json_query('*.rke_ingress_dedicated_node') | length > 0  %}
+{% if hostvars | json_query('*.rke_node_labels | [?"node-role.kubernetes.io/ingress" == `true`]') | length > 0 %}
 ingress:
   node_selector:
-    dedicated: ingress
+    node-role.kubernetes.io/ingress: true
+{% endif %}
+{% if rke_private_registries is defined %}
+private_registries:
+{% for registry in rke_private_registries %}
+  - url: {{ registry.url }}
+    user: {{ registry.user }}
+    password: {{ registry.password }}
+    is_default: false
+{% endfor %}
+{% endif %}
+{% if rke_network_plugin is defined %}
+network:
+  plugin: {{ rke_network_plugin }}
+{% endif %}
+{% if rke_dns_provider is defined %}
+dns:
+  provider: {{ rke_dns_provider }}
 {% endif %}
 nodes:
-{% for host in groups['nodes'] %}
+{% for host in groups['k8s'] %}
 - address: {{ hostvars[host]['ansible_default_ipv4']['address'] }}
   hostname_override: {{ hostvars[host]['ansible_hostname'] | lower }}
   user: {{ rke_user }}
   role:
-    {{ hostvars[host]['rke_role'] | to_nice_yaml(indent=2) | indent(width=4) }}
-  {%- if hostvars[host]['rke_labels'] is defined %}
+    {{ hostvars[host]['rke_node_role'] | to_nice_yaml(indent=2) | indent(width=4) }}
+  {%- if hostvars[host]['rke_node_labels'] is defined %}
   labels:
-    {{ hostvars[host]['rke_labels'] | to_nice_yaml(indent=2) | indent(width=4) }}
+    {{ hostvars[host]['rke_node_labels'] | to_nice_yaml(indent=2) | indent(width=4) }}
   {%- endif %}
-  {%- if hostvars[host]['rke_taints'] is defined %}
+  {%- if hostvars[host]['rke_node_taints'] is defined %}
   taints:
-    {{ hostvars[host]['rke_taints'] | to_nice_yaml(indent=2) | indent(width=4) }}
+    {{ hostvars[host]['rke_node_taints'] | to_nice_yaml(indent=2) | indent(width=4) }}
   {%- endif %}
 {% endfor %}
