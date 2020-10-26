@@ -1,10 +1,22 @@
 ---
 # tasks file for k8s_rke
+- name: Get the RKE version
+  shell: /usr/local/bin/rke version | awk '/Running RKE version/{print $NF}' | sed 's/"//g'
+  args:
+    executable: /bin/bash
+  register: rke_version
+  changed_when: False
+  ignore_errors: True
+  run_once: True
+  delegate_to: "{{ rke_node }}"
+
 - name: Download the RKE binary
   get_url:
     url: "{{ rke_binary_url }}"
     dest: /usr/local/bin/rke
     mode: +rx
+    force: yes
+  when: rke_version.stdout != rke_release_version
   run_once: yes
   delegate_to: "{{ rke_node }}"
 
