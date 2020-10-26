@@ -1,7 +1,9 @@
 ---
 # tasks file for k8s_rke
 - name: Get the RKE version
-  shell: /usr/local/bin/rke version | awk '/Running RKE version/{print $NF}' | sed 's/"//g'
+  shell: |
+    set -o pipefail
+    /usr/local/bin/rke version | awk '/Running RKE version/{print $NF}' | sed 's/"//g'
   args:
     executable: /bin/bash
   register: rke_version
@@ -44,9 +46,9 @@
 - name: Deploy Kubernetes with RKE
   become: yes
   become_user: "{{ rke_user }}"
-  shell: >
-    set -o pipefail && \
-      /usr/local/bin/rke up | tee rke-up.log
+  shell: |
+    set -o pipefail
+    /usr/local/bin/rke up | tee rke-up.log
   args:
     executable: /bin/bash
     chdir: "{{ _rke_config_dir }}"
