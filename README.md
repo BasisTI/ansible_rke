@@ -8,35 +8,31 @@ An ansible role that setup kubernetes cluster with rke on rhel/centos/fedora and
 ## Tags:
 ## Variables:
 
-* `kubernetes_supported_versions`: `{"v1.18.6": "v1.18.6-rancher1-1", "v1.17.9": "v1.17.9-rancher1-1", "v1.16.13": "v1.16.13-rancher1-1", "v1.15.12": "v1.15.12-rancher2-4"}` - Each version of RKE has a specific list of supported Kubernetes versions.
+* `rke_kubernetes_supported_versions`: `{"v1.18.6": "v1.18.6-rancher1-1", "v1.17.9": "v1.17.9-rancher1-1", "v1.16.13": "v1.16.13-rancher1-1", "v1.15.12": "v1.15.12-rancher2-4"}` - Each version of RKE has a specific list of supported Kubernetes versions.
 
 example: 
 
 
 ```yaml
-kubernetes_supported_versions:
+rke_kubernetes_supported_versions:
   v1.19.3: v1.19.3-rancher1-1
   v1.18.10: v1.18.10-rancher1-1
   v1.17.13: v1.17.13-rancher1-1
 ```
 
-* `kubernetes_version`: `v1.19.3` - Specify the kubernetes version across kubernetes supported versions.
+* `k8s_version`: `v1.19.3` - Specify the kubernetes version across kubernetes supported versions.
 
 
 
-* `kubectl_version`: `"{{ kubernetes_version }}"` - Defines the kubectl version will be installed.
+* `rke_kubernetes_version`: `"{{ rke_kubernetes_supported_versions[rke_kubernetes_version] }}"` - Map the RKE kubernetes image version across the selection to the kubernetes version.
 
 
 
-* `rke_kubernetes_version`: `"{{ kubernetes_supported_versions[kubernetes_version] }}"` - Map the RKE kubernetes image version across the selection to the kubernetes version.
+* `rke_version`: `v1.2.1` - Defines rke version.
 
 
 
-* `rke_release_version`: `v1.2.1` - Defines rke version.
-
-
-
-* `rke_binary_url`: `"https://github.com/rancher/rke/releases/download/{{ rke_release_version }}/rke_linux-amd64"` - Defines rke binary url download.
+* `rke_binary_url`: `"https://github.com/rancher/rke/releases/download/{{ rke_version }}/rke_linux-amd64"` - Defines rke binary url download.
 
 
 
