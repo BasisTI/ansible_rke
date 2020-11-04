@@ -16,7 +16,7 @@ services:
     cluster_cidr: {{ rke_cluster_network_cidr }}
     service_cluster_ip_range: {{ rke_service_network_cidr }}
   kubelet:
-    cluster_dns_server: {{ rke_service_network_cidr | ipmath(10) }}
+    cluster_dns_server: {{ rke_service_network_cidr | next_nth_usable(10) }}
 {% if hostvars | json_query('*.rke_node_labels | [?"node-role.kubernetes.io/ingress" == `true`]') | length > 0 %}
 ingress:
   node_selector:
@@ -45,13 +45,13 @@ nodes:
   hostname_override: {{ hostvars[host]['ansible_hostname'] | lower }}
   user: {{ rke_user }}
   role:
-    {{ hostvars[host]['rke_node_role'] | to_nice_yaml(indent=2) | indent(width=4) }}
-  {%- if hostvars[host]['rke_node_labels'] is defined %}
+    {{ hostvars[host]['rke_node_role'] | to_nice_yaml(indent=4) }}
+{%- if hostvars[host]['rke_node_labels'] is defined %}
   labels:
-    {{ hostvars[host]['rke_node_labels'] | to_nice_yaml(indent=2) | indent(width=4) }}
-  {%- endif %}
-  {%- if hostvars[host]['rke_node_taints'] is defined %}
+    {{ hostvars[host]['rke_node_labels'] | to_nice_yaml(indent=4) }}
+{%- endif %}
+{%- if hostvars[host]['rke_node_taints'] is defined %}
   taints:
-    {{ hostvars[host]['rke_node_taints'] | to_nice_yaml(indent=2) | indent(width=4) }}
-  {%- endif %}
+    {{ hostvars[host]['rke_node_taints'] | to_nice_yaml(indent=4) }}
+{%- endif %}
 {% endfor %}

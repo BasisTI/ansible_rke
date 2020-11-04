@@ -76,3 +76,5 @@ rke_dedicated_node: |
       }
     ]
   }
+
+kubetools_kubectl_version: "{{ k8s_version }}"

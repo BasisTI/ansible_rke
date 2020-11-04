@@ -3,20 +3,20 @@
 - name: Create user for deploy on RKE node
   user:
     name: "{{ rke_user }}"
-    generate_ssh_key: yes
+    generate_ssh_key: True
     ssh_key_bits: 4096
     ssh_key_file: .ssh/id_rsa
     groups: docker
-    append: yes
+    append: True
   register: rke_user_return
-  run_once: yes
+  run_once: True
   delegate_to: "{{ rke_node }}"
 
 - name: Create user for deploy on anothers nodes
   user:
     name: "{{ rke_user }}"
     groups: docker
-    append: yes
+    append: True
 
 - name: Set rke variables
   set_fact:

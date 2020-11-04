@@ -1,32 +1,29 @@
 ---
 # defaults file for k8s_rke
-# @var kubernetes_supported_versions: {"v1.18.6": "v1.18.6-rancher1-1", "v1.17.9": "v1.17.9-rancher1-1", "v1.16.13": "v1.16.13-rancher1-1", "v1.15.12": "v1.15.12-rancher2-4"}
+# @var rke_kubernetes_supported_versions: {"v1.18.6": "v1.18.6-rancher1-1", "v1.17.9": "v1.17.9-rancher1-1", "v1.16.13": "v1.16.13-rancher1-1", "v1.15.12": "v1.15.12-rancher2-4"}
 # Each version of RKE has a specific list of supported Kubernetes versions.
 # @example #
-# kubernetes_supported_versions:
+# rke_kubernetes_supported_versions:
 #  v1.19.3: v1.19.3-rancher1-1
 #  v1.18.10: v1.18.10-rancher1-1
 #  v1.17.13: v1.17.13-rancher1-1
 # @end
-kubernetes_supported_versions:
+rke_kubernetes_supported_versions:
   v1.19.3: v1.19.3-rancher1-1
   v1.18.10: v1.18.10-rancher1-1
   v1.17.13: v1.17.13-rancher1-1
-# @var kubernetes_version: v1.19.3
+# @var k8s_version: v1.19.3
 # Specify the kubernetes version across kubernetes supported versions.
-kubernetes_version: v1.19.3
-# @var kubectl_version: "{{ kubernetes_version }}"
-# Defines the kubectl version will be installed.
-kubectl_version: "{{ kubernetes_version }}"
-# @var rke_kubernetes_version: "{{ kubernetes_supported_versions[kubernetes_version] }}"
+k8s_version: v1.19.3
+# @var rke_kubernetes_version: "{{ rke_kubernetes_supported_versions[rke_kubernetes_version] }}"
 # Map the RKE kubernetes image version across the selection to the kubernetes version.
-rke_kubernetes_version: "{{ kubernetes_supported_versions[kubernetes_version] }}"
-# @var rke_release_version: v1.2.1
+rke_kubernetes_version: "{{ rke_kubernetes_supported_versions[k8s_version] }}"
+# @var rke_version: v1.2.1
 # Defines rke version.
-rke_release_version: v1.2.1
-# @var rke_binary_url: "https://github.com/rancher/rke/releases/download/{{ rke_release_version }}/rke_linux-amd64"
+rke_version: v1.2.1
+# @var rke_binary_url: "https://github.com/rancher/rke/releases/download/{{ rke_version }}/rke_linux-amd64"
 # Defines rke binary url download.
-rke_binary_url: "https://github.com/rancher/rke/releases/download/{{ rke_release_version }}/rke_linux-amd64"
+rke_binary_url: "https://github.com/rancher/rke/releases/download/{{ rke_version }}/rke_linux-amd64"
 # @var rke_user: rke
 # User that will be used to connect on nodes during the installation proccess.
 rke_user: rke
@@ -34,7 +31,7 @@ rke_user: rke
 # Node that will be used to deploy cluster using RKE.
 rke_node: "{{ groups['masters'] | first }}"
 rke_ignore_docker_version: true
-rke_addon_job_timeout: 30
+rke_addon_job_timeout: 60
 # @var rke_cluster_network_cidr: '10.42.0.0/16'
 # CIDR pool used to assign IP addresses to pods in the cluster.
 rke_cluster_network_cidr: 10.42.0.0/16

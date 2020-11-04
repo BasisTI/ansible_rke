@@ -1,14 +1,19 @@
 ---
 # tasks file for k8s_rke
+- name: Check if RKE binary exists
+  stat:
+    path: /usr/local/bin/rke
+  register: rke_stat
+
 - name: Get the RKE version
   shell: |
     set -o pipefail
     /usr/local/bin/rke version | awk '/Running RKE version/{print $NF}' | sed 's/"//g'
   args:
     executable: /bin/bash
-  register: rke_version
+  register: rke_existing_version
+  when: rke_stat.stat.exists
   changed_when: False
-  ignore_errors: True
   run_once: True
   delegate_to: "{{ rke_node }}"
 
@@ -16,10 +21,10 @@
   get_url:
     url: "{{ rke_binary_url }}"
     dest: /usr/local/bin/rke
-    mode: +rx
-    force: yes
-  when: rke_version.stdout != rke_release_version
-  run_once: yes
+    mode: '+rx'
+    force: True
+  when: not rke_stat.stat.exists or rke_version not in rke_existing_version.stdout
+  run_once: True
   delegate_to: "{{ rke_node }}"
 
 - name: Ensure config directory exists
@@ -29,7 +34,7 @@
     owner: "{{ rke_user }}"
     group: "{{ rke_user }}"
     mode: '0755'
-  run_once: yes
+  run_once: True
   delegate_to: "{{ rke_node }}"
 
 - name: Create the cluster configuration file
@@ -40,11 +45,11 @@
     group: "{{ rke_user }}"
     mode: '0644'
   register: rke_cluster_config
-  run_once: yes
+  run_once: True
   delegate_to: "{{ rke_node }}"
 
 - name: Deploy Kubernetes with RKE
-  become: yes
+  become: True
   become_user: "{{ rke_user }}"
   shell: |
     set -o pipefail
@@ -52,8 +57,8 @@
   args:
     executable: /bin/bash
     chdir: "{{ _rke_config_dir }}"
-  changed_when: false
-  run_once: yes
+  changed_when: False
+  run_once: True
   delegate_to: "{{ rke_node }}"
 
 - name: Check deploy Kubernetes with RKE
@@ -61,11 +66,11 @@
     path: "{{ _rke_config_dir }}/rke-up.log"
     regexp: 'Finished building Kubernetes cluster successfully'
     state: absent
-  check_mode: yes
+  check_mode: True
   register: rke_up_successfully
   changed_when: false
   failed_when: rke_up_successfully is failed or not rke_up_successfully.found
-  run_once: yes
+  run_once: True
   delegate_to: "{{ rke_node }}"
 
 - name: Ensure $HOME/.kube exists
@@ -73,14 +78,14 @@
     path: ~/.kube
     state: directory
     mode: '0755'
-  run_once: yes
+  run_once: True
   delegate_to: "{{ rke_node }}"
 
 - name: Copy kubeconfig to default location
   copy:
-    remote_src: yes
+    remote_src: True
     src: "{{ _rke_config_dir }}/kube_config_cluster.yml"
     dest: ~/.kube/config
     mode: '0644'
-  run_once: yes
+  run_once: True
   delegate_to: "{{ rke_node }}"
