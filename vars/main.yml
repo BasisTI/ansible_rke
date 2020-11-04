@@ -77,4 +77,4 @@ rke_dedicated_node: |
     ]
   }
 
-kubetools_kubectl_version: "{{ k8s_version }}"
+kubetools_kubectl_version: "{{ rke_kubernetes_version.split('-')[0] }}"

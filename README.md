@@ -8,23 +8,7 @@ An ansible role that setup kubernetes cluster with rke on rhel/centos/fedora and
 ## Tags:
 ## Variables:
 
-* `rke_kubernetes_supported_versions`: `{"v1.18.6": "v1.18.6-rancher1-1", "v1.17.9": "v1.17.9-rancher1-1", "v1.16.13": "v1.16.13-rancher1-1", "v1.15.12": "v1.15.12-rancher2-4"}` - Each version of RKE has a specific list of supported Kubernetes versions.
-
-example: 
-
-
-```yaml
-rke_kubernetes_supported_versions:
-  v1.19.3: v1.19.3-rancher1-1
-  v1.18.10: v1.18.10-rancher1-1
-  v1.17.13: v1.17.13-rancher1-1
-```
-
-* `k8s_version`: `v1.19.3` - Specify the kubernetes version across kubernetes supported versions.
-
-
-
-* `rke_kubernetes_version`: `"{{ rke_kubernetes_supported_versions[rke_kubernetes_version] }}"` - Map the RKE kubernetes image version across the selection to the kubernetes version.
+* `rke_kubernetes_version`: `v1.19.3-rancher1-1` - Map the RKE kubernetes image version across the selection to the kubernetes version.
 
 
 
