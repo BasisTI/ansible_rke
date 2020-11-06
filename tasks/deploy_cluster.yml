@@ -13,6 +13,7 @@
     executable: /bin/bash
   register: rke_existing_version
   when: rke_stat.stat.exists
+  ignore_errors: True
   changed_when: False
   run_once: True
   delegate_to: "{{ rke_node }}"
