@@ -6,14 +6,9 @@
   register: rke_stat
 
 - name: Get the RKE version
-  shell: |
-    set -o pipefail
-    /usr/local/bin/rke version | awk '/Running RKE version/{print $NF}' | sed 's/"//g'
-  args:
-    executable: /bin/bash
+  command: /usr/local/bin/rke --version
   register: rke_existing_version
   when: rke_stat.stat.exists
-  ignore_errors: True
   changed_when: False
   run_once: True
   delegate_to: "{{ rke_node }}"
