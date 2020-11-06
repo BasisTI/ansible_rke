@@ -45,13 +45,13 @@ nodes:
   hostname_override: {{ hostvars[host]['ansible_hostname'] | lower }}
   user: {{ rke_user }}
   role:
-    {{ hostvars[host]['rke_node_role'] | to_nice_yaml(indent=4) }}
-{%- if hostvars[host]['rke_node_labels'] is defined %}
+    {{ hostvars[host]['rke_node_role'] | to_nice_yaml(indent=2) | indent(width=4) }}
+{% if hostvars[host]['rke_node_labels'] is defined %}
   labels:
-    {{ hostvars[host]['rke_node_labels'] | to_nice_yaml(indent=4) }}
-{%- endif %}
-{%- if hostvars[host]['rke_node_taints'] is defined %}
+    {{ hostvars[host]['rke_node_labels'] | to_nice_yaml(indent=2) | indent(width=4) }}
+{% endif %}
+{% if hostvars[host]['rke_node_taints'] is defined %}
   taints:
-    {{ hostvars[host]['rke_node_taints'] | to_nice_yaml(indent=4) }}
-{%- endif %}
+    {{ hostvars[host]['rke_node_taints'] | to_nice_yaml(indent=2) | indent(width=4) }}
+{% endif %}
 {% endfor %}
