@@ -8,11 +8,11 @@ An ansible role that setup kubernetes cluster with rke on rhel/centos/fedora and
 ## Tags:
 ## Variables:
 
-* `rke_kubernetes_version`: `v1.19.3-rancher1-1` - Map the RKE kubernetes image version across the selection to the kubernetes version.
+* `rke_kubernetes_version`: `v1.20.6-rancher1-1` - Map the RKE kubernetes image version across the selection to the kubernetes version.
 
 
 
-* `rke_version`: `v1.2.1` - Defines rke version.
+* `rke_version`: `v1.2.8` - Defines rke version.
 
 
 
